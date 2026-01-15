@@ -199,6 +199,13 @@ def main():
         font-weight: 600 !important;
         line-height: 1.6 !important;
     }
+    footer {display: none !important;}
+    .show-api {display: none !important;}
+    .upload-container .or, .upload-container .upload-button {font-size: 0 !important;}
+    .upload-container .or::after {content: 'OR' !important; font-size: 14px !important;}
+    .upload-container .upload-button::after {content: 'Upload' !important; font-size: 14px !important;}
+    .upload-container p {font-size: 0 !important;}
+    .upload-container p::after {content: 'Drop File Here' !important; font-size: 16px !important;}
     """
     with gr.Blocks(title="LaCoGSEA Graphical Interface", css=css) as demo:
         gr.Markdown("# 🚀 LaCoGSEA: Latent Correlation-GSEA")
@@ -279,7 +286,7 @@ def main():
                     "[Learn more](https://www.gsea-msigdb.org/)"
                 )
 
-    demo.launch(share=False, inbrowser=True)
+    demo.launch(share=False, inbrowser=True, show_api=False)
 
 if __name__ == "__main__":
     main()
