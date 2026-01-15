@@ -35,6 +35,23 @@ lacogsea install-java
 
 ---
 
+## 🎨 Graphical User Interface (GUI)
+
+For users who prefer a visual interface (e.g., biologists), LaCoGSEA provides a built-in web-based GUI.
+
+### Windows (Quick Start)
+1. Double-click `install_windows.bat` (only needed once).
+2. Double-click `run_gui.bat`.
+3. Your browser will automatically open the LaCoGSEA interface.
+
+### Manual Launch
+```bash
+lacogsea-gui
+```
+The GUI allows you to upload datasets, select gene sets, adjust parameters, and view heatmaps/NES tables interactively.
+
+---
+
 ## 💻 Usage
 
 ### Subcommand 1: `run` (Standard Workflow)
