@@ -1,0 +1,22 @@
+GSEA SOFTWARE LICENSE AGREEMENT
+
+Copyright (c) Broad Institute, Inc.
+
+Permission is hereby granted for academic, non-commercial use only,
+to install, use, copy, modify, and distribute this software, subject
+to the following conditions:
+
+1. The software and any associated documentation are for your internal 
+   academic, non-commercial research use only.
+
+2. Redistribution of the software is permitted only in binary form, and 
+   must be accompanied by this license agreement.
+
+3. The name of the Broad Institute may not be used to endorse or promote 
+   products derived from this software without specific prior written 
+   permission.
+
+4. All rights, title and interest in and to the software remain with 
+   the Broad Institute.
+
+[Complete official license text should be obtained from https://www.gsea-msigdb.org/gsea/license_terms_v5.jsp]
