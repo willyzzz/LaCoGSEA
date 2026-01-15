@@ -8,13 +8,22 @@ LaCoGSEA is a powerful tool designed to interpret the latent space of autoencode
 
 The easiest way to use LaCoGSEA is through its built-in Graphical User Interface. 
 
-### 🚀 One-Click Launch (Windows)
+### 🚀 Windows Users
 1. **Double-click `LaCoGSEA_run.bat`**.
-2. If it's your first time, it will automatically install all dependencies.
-3. Your browser will open the interface.
-4. Upload your dataset (or leave empty to use the built-in example) and click **Run**.
+2. If Python is missing, it will provide you with a download link.
+3. Your browser will open the interface automatically.
 
-*Note: Environment checks (like Java) and data transformations are handled automatically.*
+### 🐧 Linux / macOS Users
+1. Open terminal in the project folder.
+2. Run: `bash LaCoGSEA_run.sh`
+3. (Optional) You can also install manually: `pip install -e .` followed by `lacogsea-gui`.
+
+### ❓ No Python Environment?
+LaCoGSEA requires Python 3.8-3.12. If you don't have it:
+- **Windows**: [Download Python from here](https://www.python.org/downloads/). **Crucial**: Tick "Add Python to PATH" during install.
+- **Linux**: Usually pre-installed. If not: `sudo apt install python3 python3-pip`.
+
+*Note: Environment checks (like Java) and data transformations are handled automatically upon clicking 'Run' in the GUI.*
 
 ### Manual Launch (Command Line)
 ```bash
