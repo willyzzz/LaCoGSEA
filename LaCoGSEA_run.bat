@@ -9,38 +9,31 @@ echo ==================================================
 python --version >nul 2>&1
 if errorlevel 1 goto NOPYTHON
 
-:: 2. Create/Activate Virtual Environment
+:: 2. Create/Activate venv
 if exist .venv goto ACTIVATE
-echo [INFO] Creating isolated virtual environment (.venv)...
+echo [INFO] Creating isolated environment...
 python -m venv .venv
 if errorlevel 1 goto VENV_FAIL
 
 :ACTIVATE
 call .venv\Scripts\activate.bat
 
-:: 3. Check/Install dependencies
+:: 3. Fast-track Installation
 if exist .venv\lacogsea_installed goto LAUNCH
-echo [INFO] Installing light-weight dependencies...
-python -m pip install --upgrade pip
+echo [1/2] Installing core components (One-time setup)...
 
-:: Optimization: Install CPU-only Torch to save gigabytes of space and time
-echo [INFO] Installing CPU-version of Torch (Optimized for speed)...
-pip install torch --index-url https://download.pytorch.org/whl/cpu
-
-echo [INFO] Installing other requirements...
-pip install -r requirements.txt
-
-echo [INFO] Finalizing package...
-pip install -e . --no-deps
+:: Combined install for maximum speed + CPU Torch prioritization
+pip install --quiet --no-warn-script-location --prefer-binary ^
+    --extra-index-url https://download.pytorch.org/whl/cpu ^
+    -r requirements.txt
 
 if errorlevel 1 goto INSTALL_FAIL
-
 echo. > .venv\lacogsea_installed
-echo [SUCCESS] Environment ready.
 
 :LAUNCH
-echo [INFO] Launching Graphical Interface...
-lacogsea-gui
+echo [2/2] Launching LaCoGSEA...
+:: Run module directly to skip heavy package registration entries
+python -m lacogsea.gui
 if errorlevel 1 goto LAUNCH_FAIL
 goto END
 
@@ -50,7 +43,7 @@ pause
 exit /b
 
 :VENV_FAIL
-echo [ERROR] Failed to create venv.
+echo [ERROR] Failed to create environment.
 pause
 exit /b
 
@@ -60,7 +53,7 @@ pause
 exit /b
 
 :LAUNCH_FAIL
-echo [ERROR] Failed to start GUI.
+echo [ERROR] Failed to start. 
 pause
 exit /b
 

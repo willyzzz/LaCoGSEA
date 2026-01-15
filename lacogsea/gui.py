@@ -234,7 +234,7 @@ def main():
                     value="weighted", 
                     label="GSEA Scoring Scheme"
                 )
-                no_make_sets = gr.Checkbox(label="Disable detailed HTML reports (Faster)", value=False)
+                no_make_sets = gr.Checkbox(label="Disable detailed HTML reports (Faster)", value=True)
                 
                 run_btn = gr.Button("🔥 Run Full Pipeline", variant="primary")
 

@@ -92,15 +92,14 @@ def run_gsea_preranked(rnk_file, gene_set_file, output_dir, label, memory="4g",
         "-zip_report", "false"
     ]
     
-    original_cwd = os.getcwd()
     try:
-        os.chdir(gsea_dir)
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
             timeout=3600,
-            shell=False
+            shell=False,
+            cwd=gsea_dir # Use local cwd for this subprocess only
         )
         
         if result.returncode != 0:
@@ -131,5 +130,3 @@ def run_gsea_preranked(rnk_file, gene_set_file, output_dir, label, memory="4g",
             
     except Exception as e:
         return False, str(e)
-    finally:
-        os.chdir(original_cwd)
