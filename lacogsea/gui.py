@@ -220,7 +220,7 @@ def main():
             with gr.Column():
                 gr.Markdown("### 3. Parameters")
                 with gr.Row():
-                    dim = gr.Number(label="Latent Dimensions", value=32, precision=0)
+                    dim = gr.Number(label="Latent Dimensions", value=4, precision=0)
                     epochs = gr.Number(label="AE Training Epochs", value=100, precision=0)
                     batch_size = gr.Number(label="Batch Size", value=128, precision=0)
                 

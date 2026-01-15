@@ -217,7 +217,7 @@ def run_full_pipeline(
     test_csv: Union[str, Path],
     gene_set: Union[str, Path],
     output_dir: Union[str, Path],
-    dim: int = 32,
+    dim: int = 4,
     epochs: int = 200,
     batch_size: int = 128,
     label: str = "lacogsea",
