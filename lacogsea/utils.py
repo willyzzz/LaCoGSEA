@@ -3,7 +3,7 @@ import os
 import sys
 import zipfile
 import tarfile
-import requests
+import urllib.request
 import logging
 from pathlib import Path
 from typing import Union
@@ -17,14 +17,13 @@ JAVA_URLS = {
 }
 
 def download_file(url: str, dest: Path):
-    """Download a file with a simple progress log."""
-    LOGGER.info(f"Downloading: {url}")
-    response = requests.get(url, stream=True)
-    response.raise_for_status()
-    
-    with open(dest, "wb") as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            f.write(chunk)
+    """Download a file using built-in urllib."""
+    LOGGER.info(f"Downloading: {url} ...")
+    try:
+        urllib.request.urlretrieve(url, dest)
+    except Exception as e:
+        LOGGER.error(f"Download error: {e}")
+        raise
 
 def install_internal_java(target_dir: Union[str, Path]) -> bool:
     """

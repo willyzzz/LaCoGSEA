@@ -44,8 +44,8 @@ lacogsea/vendor/GSEA_4.4.0/*.tar.gz
 .DS_Store
 Thumbs.db
 
-# Test files
-real_test.gmt
-test_embedding.csv
-encoder.pt
-decoder.pt
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/

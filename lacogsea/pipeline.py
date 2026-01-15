@@ -13,6 +13,9 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from torch.cuda.amp import GradScaler, autocast
 import warnings
+import shutil
+import concurrent.futures
+import multiprocessing
 
 from .model_structure import Encoder, Decoder
 from .training import train_auto_encoder
@@ -281,36 +284,51 @@ def run_full_pipeline(
     gsea_output_dir = output_dir / "gsea"
     _ensure_dir(gsea_output_dir)
 
-    # Initial progress
-    bar_length = 30
-    sys.stdout.write(f"\r      [{'-' * bar_length}] 0% (0/{dim} dims)")
-    sys.stdout.flush()
-
+    # Multi-threaded GSEA execution
+    max_workers = max(1, multiprocessing.cpu_count() // 2)
+    # Cap workers to avoid memory issues, GSEA is Java-heavy
+    max_workers = min(max_workers, 8)
+    
+    LOGGER.info(f"   [Performance] Using {max_workers} parallel workers for GSEA.")
+    
+    tasks = []
     for i in range(dim):
         dim_label = f"{label}_dim{i}"
         rnk_file = correlations_dir / f"dimension_{i}.rnk"
-        
-        progress = (i + 1) / dim
-        filled_length = int(bar_length * progress)
-        bar = '█' * filled_length + '░' * (bar_length - filled_length)
-        percent = int(progress * 100)
-        
-        # Resume Check
-        if check_gsea_result_exists(gsea_output_dir, dim_label):
-            sys.stdout.write(f"\r      🏁 GSEA Progress: [{bar}] {percent}% ({i+1}/{dim} dims) - Cached")
-            sys.stdout.flush()
-            continue
+        tasks.append((rnk_file, gene_set, gsea_output_dir, dim_label))
+
+    completed = 0
+    bar_length = 30 # Define bar_length for progress bar
+    # Use ThreadPoolExecutor for I/O bound subprocesses
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_dim = {
+            executor.submit(
+                run_gsea, 
+                t[0], t[1], t[2], t[3], 
+                permutations, min_size, max_size, 
+                memory="2g", # Lower memory per worker to allow parallelism
+                scoring_scheme=scoring_scheme, 
+                make_sets=make_sets, 
+                quiet=True
+            ): i for i, t in enumerate(tasks)
+        }
+
+        for future in concurrent.futures.as_completed(future_to_dim):
+            i = future_to_dim[future]
+            success, err_msg = future.result()
+            completed += 1
             
-        success, err_msg = run_gsea(rnk_file, gene_set, gsea_output_dir, dim_label,
-                                    permutations, min_size, max_size, scoring_scheme=scoring_scheme, 
-                                    make_sets=make_sets, quiet=True)
-        if not success:
-            sys.stdout.write("\n")
-            LOGGER.error(f"   ❌ [Error] Dimension {i} failed: {err_msg}")
-            sys.exit(1)
-        
-        sys.stdout.write(f"\r      🏁 GSEA Progress: [{bar}] {percent}% ({i+1}/{dim} dims)")
-        sys.stdout.flush()
+            if not success:
+                LOGGER.error(f"   ❌ [Error] Dimension {i} failed: {err_msg}")
+                # We don't exit immediately here to let other threads finish/error properly
+            
+            # Progress Update
+            progress = completed / dim
+            filled_length = int(bar_length * progress)
+            bar = '█' * filled_length + '░' * (bar_length - filled_length)
+            percent = int(progress * 100)
+            sys.stdout.write(f"\r      🏁 GSEA Progress: [{bar}] {percent}% ({completed}/{dim} dims)")
+            sys.stdout.flush()
             
     sys.stdout.write("\n")
 
