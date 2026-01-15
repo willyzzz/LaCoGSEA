@@ -18,27 +18,37 @@ if errorlevel 1 goto VENV_FAIL
 :ACTIVATE
 call .venv\Scripts\activate.bat
 
-:: 3. Fast-track Installation
+:: 3. Installation
 if exist .venv\lacogsea_installed goto LAUNCH
-echo [1/2] Installing core components (One-time setup)...
 
-:: Combined install for maximum speed + CPU Torch prioritization
-pip install --quiet --no-warn-script-location --prefer-binary ^
-    --extra-index-url https://download.pytorch.org/whl/cpu ^
-    -r requirements.txt
+echo [INFO] Installing core components (One-time setup)...
+echo [NOTE] Showing installation logs for transparency.
+
+:: Step 1: Install CPU Torch first with specific index
+echo [1/2] Installing PyTorch (CPU version)...
+pip install torch --index-url https://download.pytorch.org/whl/cpu --prefer-binary
+
+:: Step 2: Install others from requirements
+echo [2/2] Installing remaining dependencies...
+pip install -r requirements.txt --prefer-binary
 
 if errorlevel 1 goto INSTALL_FAIL
 echo. > .venv\lacogsea_installed
+echo [SUCCESS] Environment ready.
 
 :LAUNCH
-echo [2/2] Launching LaCoGSEA...
-:: Run module directly to skip heavy package registration entries
+echo [INFO] Launching LaCoGSEA...
 python -m lacogsea.gui
-if errorlevel 1 goto LAUNCH_FAIL
+if errorlevel 1 (
+    echo [ERROR] Application crashed. Checking dependencies...
+    :: If it crashes, maybe some deps are missing, allow one retry of install
+    del .venv\lacogsea_installed >nul 2>&1
+    pause
+)
 goto END
 
 :NOPYTHON
-echo [ERROR] Python not found.
+echo [ERROR] Python not found. Please install Python 3.8-3.12.
 pause
 exit /b
 
@@ -48,7 +58,7 @@ pause
 exit /b
 
 :INSTALL_FAIL
-echo [ERROR] Installation failed.
+echo [ERROR] Installation failed. This might be due to incompatible Python version or network issues.
 pause
 exit /b
 
