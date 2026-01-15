@@ -1,4 +1,5 @@
-from __future__ import annotations
+import matplotlib
+matplotlib.use('Agg') # Ensure robust plotting in headless environments
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd

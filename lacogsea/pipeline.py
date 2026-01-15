@@ -37,11 +37,11 @@ def _auto_log2_transform(train_df: pd.DataFrame, test_df: pd.DataFrame) -> tuple
     """Check max value and apply log2(x+1) only if data seems non-logged (max > 50)."""
     max_val = train_df.values.max()
     if max_val > 50:
-        LOGGER.info(f"   [Data] High scale detected (max={max_val:.1f}). Applying Log2(x+1) transformation.")
+        LOGGER.info(f"   📊 [Data] High scale detected (max={max_val:.1f}). Applying Log2(x+1).")
         train_df = pd.DataFrame(np.log2(train_df.values.astype(np.float32) + 1.0), index=train_df.index, columns=train_df.columns)
         test_df = pd.DataFrame(np.log2(test_df.values.astype(np.float32) + 1.0), index=test_df.index, columns=test_df.columns)
     else:
-        LOGGER.info(f"   [Data] Low scale detected (max={max_val:.1f}). Data assumed to be Log-transformed. Skipping.")
+        LOGGER.info(f"   📊 [Data] Low scale detected (max={max_val:.1f}). Data assumed to be Log-transformed.")
     return train_df, test_df
 
 
@@ -106,12 +106,22 @@ def train_autoencoder(
         warnings.filterwarnings("ignore", category=UserWarning)
         scaler = GradScaler(enabled=torch.cuda.is_available())
 
+    # AE Training progress bar
+    bar_length_ae = 20
     for epoch in range(epochs):
         loss = train_auto_encoder(
             encoder, decoder, train_loader, criterion, optimizer, scaler, device
         )
-        if (epoch + 1) % max(1, epochs // 10) == 0 or epoch == 0:
-            LOGGER.info(f"   Epoch {epoch + 1}/{epochs} - loss: {loss:.4f}")
+        
+        # Show progress every epoch in a compact way
+        progress_ae = (epoch + 1) / epochs
+        filled_ae = int(bar_length_ae * progress_ae)
+        bar_ae = '█' * filled_ae + '░' * (bar_length_ae - filled_ae)
+        percent_ae = int(progress_ae * 100)
+        sys.stdout.write(f"\r      ⚡ AE Training: [{bar_ae}] {percent_ae}% | Epoch {epoch+1}/{epochs} | Loss: {loss:.4f}")
+        sys.stdout.flush()
+
+    sys.stdout.write("\n")
 
     encoder_path = output_dir / "encoder.pt"
     decoder_path = output_dir / "decoder.pt"
@@ -219,17 +229,53 @@ def run_full_pipeline(
     _ensure_dir(output_dir)
 
     # 1. Train
-    LOGGER.info(f"[1/6] Training Autoencoder (dim={dim}, epochs={epochs})...")
+    LOGGER.info(f"\n[1/6] 🤖 Training Autoencoder (dim={dim}, epochs={epochs})...")
     train_res = train_autoencoder(train_csv, test_csv, output_dir, dim, batch_size, epochs)
 
     # 2. RNKs
-    LOGGER.info("[2/6] Calculating Pearson Correlations...")
+    LOGGER.info("\n[2/6] 📉 Calculating Pearson Correlations...")
     expr_df = pd.read_csv(test_csv, index_col=0)
     corrs = calculate_pearson_correlation(train_res.embedding, expr_df)
     save_correlation_lists(corrs, output_dir)
     correlations_dir = output_dir / "correlations"
 
     # 3. GSEA
+    LOGGER.info(f"\n[3/6] 🧬 Running GSEA Preranked for {dim} dimensions...")
+    
+    # Safety Check: If output_dir exists but was for a different dimension, clean it
+    gsea_base_dir = output_dir / "gsea"
+    if gsea_base_dir.exists():
+        existing_dirs = list(gsea_base_dir.glob(f"{label}_dim*"))
+        if existing_dirs:
+            # Check if any folder index exceeds or is far from current dim
+            # Simple heuristic: if any dimN exists where N >= dim, it's definitely incompatible
+            try:
+                # Extract dimension numbers from existing GSEA result directories
+                existing_dim_nums = []
+                for d_path in existing_dirs:
+                    try:
+                        # Expected format: {label}_dim{N}.GseaPreranked.{timestamp}
+                        # We need to parse the {N} part
+                        parts = d_path.name.split('_dim')
+                        if len(parts) > 1:
+                            dim_str = parts[1].split('.')[0]
+                            existing_dim_nums.append(int(dim_str))
+                    except ValueError:
+                        continue # Skip directories that don't match the expected pattern
+                
+                if existing_dim_nums:
+                    max_existing_dim = max(existing_dim_nums)
+                    # If the maximum existing dimension index is greater than or equal to the current 'dim',
+                    # it suggests an incompatible previous run.
+                    # Or if the number of existing dimensions is not equal to 'dim'
+                    if max_existing_dim >= dim or len(existing_dim_nums) != dim:
+                        LOGGER.warning(f"Existing GSEA results in {gsea_base_dir} are incompatible (Dim mismatch or incomplete). Performing fresh run.")
+                        shutil.rmtree(gsea_base_dir)
+            except Exception as e:
+                LOGGER.warning(f"Error checking existing GSEA results for compatibility: {e}. Proceeding with fresh run if needed.")
+                # If an error occurs during parsing, it's safer to assume incompatibility
+                shutil.rmtree(gsea_base_dir, ignore_errors=True)
+
     gmt_name = Path(gene_set).name
     LOGGER.info(f"[3/6] Running GSEA (GeneSet: {gmt_name}, Size: {min_size}-{max_size}, Permutations: {permutations}) for {dim} dimensions...")
     gsea_output_dir = output_dir / "gsea"
@@ -246,12 +292,12 @@ def run_full_pipeline(
         
         progress = (i + 1) / dim
         filled_length = int(bar_length * progress)
-        bar = '#' * filled_length + '-' * (bar_length - filled_length)
+        bar = '█' * filled_length + '░' * (bar_length - filled_length)
         percent = int(progress * 100)
         
         # Resume Check
         if check_gsea_result_exists(gsea_output_dir, dim_label):
-            sys.stdout.write(f"\r      [{bar}] {percent}% ({i+1}/{dim} dims) - Cached")
+            sys.stdout.write(f"\r      🏁 GSEA Progress: [{bar}] {percent}% ({i+1}/{dim} dims) - Cached")
             sys.stdout.flush()
             continue
             
@@ -260,26 +306,26 @@ def run_full_pipeline(
                                     make_sets=make_sets, quiet=True)
         if not success:
             sys.stdout.write("\n")
-            LOGGER.error(f"   [Error] Dimension {i} failed: {err_msg}")
+            LOGGER.error(f"   ❌ [Error] Dimension {i} failed: {err_msg}")
             sys.exit(1)
         
-        sys.stdout.write(f"\r      [{bar}] {percent}% ({i+1}/{dim} dims)")
+        sys.stdout.write(f"\r      🏁 GSEA Progress: [{bar}] {percent}% ({i+1}/{dim} dims)")
         sys.stdout.flush()
             
     sys.stdout.write("\n")
 
     # 4. Summarize
-    LOGGER.info("[4/6] Summarizing results into NES matrix...")
+    LOGGER.info("\n[4/6] 📋 Summarizing results into NES matrix...")
     nes_path = output_dir / "nes.tsv"
     summarize_gsea(gsea_output_dir, dim, nes_path)
 
     # 5. Activity
-    LOGGER.info("[5/6] Calculating Pathway Activity Matrix...")
+    LOGGER.info("\n[5/6] 🧬 Calculating Pathway Activity Matrix...")
     activity_path = output_dir / "pathway_activity.tsv"
     compute_activity(train_res.embedding_path, nes_path, activity_path)
 
     # 6. Visualization
-    LOGGER.info("[6/6] Generating Top Pathways Heatmap...")
+    LOGGER.info("\n[6/6] 🎨 Generating Top Pathways Heatmap...")
     from .summarize import get_top_pathways_for_dims
     from .plotting import plot_top_pathways_heatmap
     
