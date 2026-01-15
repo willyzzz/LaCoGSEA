@@ -11,26 +11,36 @@ if errorlevel 1 goto NOPYTHON
 
 :: 2. Create/Activate venv
 if exist .venv goto ACTIVATE
-echo [INFO] Creating isolated environment...
+echo [INFO] Creating isolated environment (.venv)...
 python -m venv .venv
 if errorlevel 1 goto VENV_FAIL
 
 :ACTIVATE
-call .venv\Scripts\activate.bat
+:: Force the script to use the local venv's python and pip
+set "PYTHON_EXE=%~dp0.venv\Scripts\python.exe"
+set "PIP_EXE=%~dp0.venv\Scripts\pip.exe"
 
-:: 3. Installation
+if not exist "%PYTHON_EXE%" (
+    echo [ERROR] Virtual environment seems corrupted. Deleting .venv...
+    rmdir /s /q .venv
+    goto :END
+)
+
+:: 3. Verification (How to test)
+echo [DEBUG] Using Python from: %PYTHON_EXE%
+
+:: 4. Installation
 if exist .venv\lacogsea_installed goto LAUNCH
 
 echo [INFO] Installing core components (One-time setup)...
-echo [NOTE] Showing installation logs for transparency.
 
-:: Step 1: Install CPU Torch first with specific index
+:: Use python -m pip to be 100%% sure we are using the venv
+"%PYTHON_EXE%" -m pip install --upgrade pip
 echo [1/2] Installing PyTorch (CPU version)...
-pip install torch --index-url https://download.pytorch.org/whl/cpu --prefer-binary
+"%PYTHON_EXE%" -m pip install torch --index-url https://download.pytorch.org/whl/cpu --prefer-binary
 
-:: Step 2: Install others from requirements
 echo [2/2] Installing remaining dependencies...
-pip install -r requirements.txt --prefer-binary
+"%PYTHON_EXE%" -m pip install -r requirements.txt --prefer-binary
 
 if errorlevel 1 goto INSTALL_FAIL
 echo. > .venv\lacogsea_installed
@@ -38,11 +48,9 @@ echo [SUCCESS] Environment ready.
 
 :LAUNCH
 echo [INFO] Launching LaCoGSEA...
-python -m lacogsea.gui
+"%PYTHON_EXE%" -m lacogsea.gui
 if errorlevel 1 (
-    echo [ERROR] Application crashed. Checking dependencies...
-    :: If it crashes, maybe some deps are missing, allow one retry of install
-    del .venv\lacogsea_installed >nul 2>&1
+    echo [ERROR] Application crashed.
     pause
 )
 goto END
@@ -58,12 +66,7 @@ pause
 exit /b
 
 :INSTALL_FAIL
-echo [ERROR] Installation failed. This might be due to incompatible Python version or network issues.
-pause
-exit /b
-
-:LAUNCH_FAIL
-echo [ERROR] Failed to start. 
+echo [ERROR] Installation failed.
 pause
 exit /b
 
