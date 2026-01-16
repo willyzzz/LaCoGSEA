@@ -73,7 +73,14 @@ def install_internal_java(target_dir: Union[str, Path]) -> bool:
             LOGGER.warning(f"shutil.move failed ({move_err}), trying simple rename...")
             extracted_path.rename(final_path)
         
-        # 4. Cleanup
+        # 4. Set executable permissions on Unix
+        if os_type == "posix":
+            java_bin = final_path / "bin" / "java"
+            if java_bin.exists():
+                LOGGER.info(f"Setting executable permissions on {java_bin}")
+                java_bin.chmod(0o755)
+        
+        # 5. Cleanup
         archive_path.unlink()
         
         LOGGER.info("[OK] Portable Java installed successfully.")

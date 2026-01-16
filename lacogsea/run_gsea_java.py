@@ -103,16 +103,27 @@ def run_gsea_preranked(rnk_file, gene_set_file, output_dir, label, memory="4g",
         )
         
         if result.returncode != 0:
-            error_msg = "GSEA Process Error"
-            # Try to extract meaningful error from stderr
-            if result.stderr:
-                lines = [line.strip() for line in result.stderr.split('\n') if line.strip()]
+            error_msg = f"GSEA Process Error (Code: {result.returncode})"
+            # Try to extract meaningful error from stderr or stdout
+            all_output = (result.stdout or "") + (result.stderr or "")
+            if all_output:
+                lines = [line.strip() for line in all_output.split('\n') if line.strip()]
                 # Look for common GSEA error markers
-                relevant_lines = [l for l in lines if "ERROR" in l.upper() or "Exception" in l]
+                relevant_lines = [l for l in lines if "ERROR" in l.upper() or "Exception" in l or "FAILED" in l.upper()]
                 if relevant_lines:
-                    error_msg = relevant_lines[-1]
+                    # Filter out common noise
+                    significant = [l for l in relevant_lines if "Registering" not in l and "Picked up" not in l]
+                    if significant:
+                        error_msg = significant[-1]
+                    else:
+                        error_msg = relevant_lines[-1]
                 elif lines:
                     error_msg = lines[-1]
+            
+            # Additional hint for empty output
+            if not all_output:
+                error_msg += " - No logs produced. Possible Java/memory issue."
+                
             return False, error_msg
             
         # Success verification

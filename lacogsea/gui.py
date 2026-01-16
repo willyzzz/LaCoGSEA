@@ -48,7 +48,9 @@ def run_pipeline_gui_stream(
     min_size,
     max_size,
     scoring_scheme,
-    no_make_sets
+    scoring_scheme,
+    no_make_sets,
+    workers
 ):
     log_stream = LogStringStream()
     handler = logging.StreamHandler(log_stream)
@@ -130,7 +132,8 @@ def run_pipeline_gui_stream(
                 min_size=int(min_size),
                 max_size=int(max_size),
                 scoring_scheme=scoring_scheme,
-                make_sets=not no_make_sets
+                make_sets=not no_make_sets,
+                workers=int(workers) if workers > 0 else None
             )
             result_container["nes_path"] = res
         except Exception as e:
@@ -241,7 +244,9 @@ def main():
                     value="weighted", 
                     label="GSEA Scoring Scheme"
                 )
-                no_make_sets = gr.Checkbox(label="Disable detailed HTML reports (Faster)", value=True)
+                with gr.Row():
+                    workers = gr.Slider(minimum=0, maximum=16, step=1, value=0, label="Parallel Workers (0 = Auto)")
+                    no_make_sets = gr.Checkbox(label="Disable detailed HTML reports (Faster)", value=True)
                 
                 run_btn = gr.Button("🔥 Run Full Pipeline", variant="primary")
 
@@ -269,7 +274,7 @@ def main():
 
         run_btn.click(
             fn=run_pipeline_gui_stream,
-            inputs=[data_input, gs_alias, custom_gmt, dim, epochs, batch_size, perms, min_sz, max_sz, scoring, no_make_sets],
+            inputs=[data_input, gs_alias, custom_gmt, dim, epochs, batch_size, perms, min_sz, max_sz, scoring, no_make_sets, workers],
             outputs=[log_output, nes_table, heatmap_output, dl_nes, dl_act, dl_reports]
         )
 

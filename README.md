@@ -99,6 +99,7 @@ If you want to use your own data or change settings, use the following arguments
 | `--scoring-scheme`| `weighted`| GSEA scoring method (`weighted`, `classic`, etc.). |
 | `--output` | `result` | Output directory. |
 | `--permutations`| `1000` | GSEA permutation count. |
+| `--workers` | `None` | Max parallel GSEA processes (auto-calculated if None). |
 | `--min-size` | `15` | Minimum gene set size. |
 | `--max-size` | `500` | Maximum gene set size. |
 | `--no-make-sets`| `False` | Disable detailed GSEA reports (faster). |

@@ -226,6 +226,7 @@ def run_full_pipeline(
     max_size: int = 500,
     scoring_scheme: str = "weighted",
     make_sets: bool = True,
+    workers: int | None = None,
 ) -> Path:
     from .evaluation import calculate_pearson_correlation, save_correlation_lists
     output_dir = Path(output_dir)
@@ -285,11 +286,15 @@ def run_full_pipeline(
     _ensure_dir(gsea_output_dir)
 
     # Multi-threaded GSEA execution
-    max_workers = max(1, multiprocessing.cpu_count() // 2)
-    # Cap workers to avoid memory issues, GSEA is Java-heavy
-    max_workers = min(max_workers, 8)
-    
-    LOGGER.info(f"   [Performance] Using {max_workers} parallel workers for GSEA.")
+    if workers is not None:
+        max_workers = max(1, workers)
+        LOGGER.info(f"   [Performance] Using {max_workers} user-specified workers for GSEA.")
+    else:
+        max_workers = max(1, multiprocessing.cpu_count() // 2)
+        # Cap workers to avoid memory issues (GSEA is Java-heavy)
+        # 4 workers * 2GB = 8GB headroom, which is safer for most systems
+        max_workers = min(max_workers, 4)
+        LOGGER.info(f"   [Performance] Using {max_workers} auto-calculated workers for GSEA.")
     
     tasks = []
     for i in range(dim):

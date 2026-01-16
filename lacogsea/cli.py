@@ -161,6 +161,7 @@ def cmd_run(args: argparse.Namespace) -> None:
         max_size=args.max_size,
         scoring_scheme=args.scoring_scheme,
         make_sets=args.make_sets,
+        workers=args.workers
     )
 
 
@@ -297,6 +298,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--min-size", type=int, default=15)
     run.add_argument("--max-size", type=int, default=500)
     run.add_argument("--scoring-scheme", default="weighted", choices=["weighted", "classic", "weighted_p2", "weighted_p1.5"])
+    run.add_argument("--workers", type=int, default=None, help="Number of parallel GSEA workers (defaults to auto)")
     run.add_argument("--no-make-sets", action="store_false", dest="make_sets", help="Disable generating detailed gene set reports to save space.")
     run.set_defaults(make_sets=True)
     run.set_defaults(func=cmd_run)
