@@ -14,25 +14,21 @@ LaCoGSEA is a powerful tool designed to interpret the latent space of autoencode
 
 The easiest way to use LaCoGSEA is through its built-in Graphical User Interface. 
 
-### 🚀 Windows Users
+### 🚀 Quick Start
 1. **Double-click `LaCoGSEA_run.bat`**.
-2. If Python is missing, it will provide you with a download link.
+2. If Python is missing, follow the download link provided in the console.
 3. Your browser will open the interface automatically.
 
-### 🐧 Linux / macOS Users
-1. Open terminal in the project folder.
-2. Run: `bash LaCoGSEA_run.sh`
-3. (Optional) You can also install manually: `pip install -e .` followed by `lacogsea-gui`.
-
-### ❓ No Python Environment?
+### ❓ Troubleshooting Python
 LaCoGSEA requires Python 3.8-3.12. If you don't have it:
-- **Windows**: [Download Python from here](https://www.python.org/downloads/). **Crucial**: Tick "Add Python to PATH" during install.
-- **Linux**: Usually pre-installed. If not: `sudo apt install python3 python3-pip`.
+- [Download Python from here](https://www.python.org/downloads/). **Crucial**: Tick "Add Python to PATH" during install.
 
 *Note: Environment checks (like Java) and data transformations are handled automatically upon clicking 'Run' in the GUI.*
 
-### Manual Launch (Command Line)
+### Manual Launch (Already Installed)
+If you have already run the automatic script once, you can launch the GUI directly from your terminal:
 ```bash
+.venv\Scripts\activate
 lacogsea-gui
 ```
 
@@ -49,7 +45,14 @@ lacogsea-gui
 
 ## 🛠️ CLI Usage
 
-For advanced users, LaCoGSEA provides a comprehensive command line interface.
+For advanced users, LaCoGSEA provides a comprehensive command line interface. Before using the commands below, you must **activate the environment** Created by the launcher:
+
+### 0. Activate Environment
+```powershell
+.venv\Scripts\activate
+```
+
+Once activated, the `lacogsea` command will be available.
 
 ### 1. Setup Environment
 Ensure Java is ready:
