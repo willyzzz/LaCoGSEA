@@ -26,9 +26,14 @@ LaCoGSEA requires Python 3.8-3.12. If you don't have it:
 *Note: Environment checks (like Java) and data transformations are handled automatically upon clicking 'Run' in the GUI.*
 
 ### Manual Launch (Already Installed)
-If you have already run the automatic script once, you can launch the GUI directly from your terminal:
+If you have already run the automatic script once, activate the environment based on your terminal:
+
+- **CMD**: `.venv\Scripts\activate`
+- **PowerShell**: `.\.venv\Scripts\Activate.ps1`
+- **Git Bash**: `source .venv/Scripts/activate`
+
+Then run:
 ```bash
-.venv\Scripts\activate
 lacogsea-gui
 ```
 
@@ -45,14 +50,28 @@ lacogsea-gui
 
 ## 🛠️ CLI Usage
 
-For advanced users, LaCoGSEA provides a comprehensive command line interface. Before using the commands below, you must **activate the environment** Created by the launcher:
+For advanced users who prefer the terminal over a GUI.
 
-### 0. Activate Environment
-```powershell
-.venv\Scripts\activate
+### 1. Initial Setup
+If you haven't run the `LaCoGSEA_run.bat` (Windows), you can initialize the environment manually:
+
+```bash
+# 1. Create environment
+python -m venv .venv
+
+# 2. Activate based on your terminal:
+# CMD:        .venv\Scripts\activate
+# PowerShell: .\.venv\Scripts\Activate.ps1
+# Git Bash:   source .venv/Scripts/activate
+
+# 3. Install core dependencies (Fastest way)
+python -m pip install torch --index-url https://download.pytorch.org/whl/cpu --prefer-binary
+python -m pip install -r requirements.txt --prefer-binary
+python -m pip install -e . --no-deps
 ```
 
-Once activated, the `lacogsea` command will be available.
+### 2. Basic Commands
+Once the environment is activated, the `lacogsea` command is ready.
 
 ### 1. Setup Environment
 Ensure Java is ready:
