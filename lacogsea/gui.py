@@ -236,14 +236,14 @@ def main():
             with gr.Column():
                 gr.Markdown("### 3. Parameters")
                 with gr.Row():
-                    dim = gr.Number(label="Latent Dimensions", value=4, precision=0)
-                    epochs = gr.Number(label="AE Training Epochs", value=100, precision=0)
-                    batch_size = gr.Number(label="Batch Size", value=128, precision=0)
+                    dim = gr.Slider(minimum=2, maximum=64, step=1, value=4, label="Latent Dimensions")
+                    epochs = gr.Slider(minimum=10, maximum=1000, step=10, value=100, label="AE Training Epochs")
+                    batch_size = gr.Slider(minimum=16, maximum=512, step=16, value=128, label="Batch Size")
                 
                 with gr.Row():
-                    perms = gr.Number(label="GSEA Permutations", value=1000, precision=0)
-                    min_sz = gr.Number(label="Gene Set Min Size", value=15, precision=0)
-                    max_sz = gr.Number(label="Gene Set Max Size", value=500, precision=0)
+                    perms = gr.Slider(minimum=100, maximum=10000, step=100, value=1000, label="GSEA Permutations")
+                    min_sz = gr.Slider(minimum=5, maximum=50, step=5, value=15, label="Gene Set Min Size")
+                    max_sz = gr.Slider(minimum=50, maximum=2000, step=50, value=500, label="Gene Set Max Size")
                 
                 scoring = gr.Radio(
                     choices=["weighted", "classic", "weighted_p2"], 
