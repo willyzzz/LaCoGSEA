@@ -30,7 +30,7 @@ If you have already run the automatic script once, activate the environment base
 
 - **CMD**: `.venv\Scripts\activate`
 - **PowerShell**: `.\.venv\Scripts\Activate.ps1`
-- **Git Bash**: `source .venv/Scripts/activate`
+- **Linux / macOS / Git Bash**: `source .venv/bin/activate`  (or `source .venv/Scripts/activate` on Windows Git Bash)
 
 Then run:
 ```bash
@@ -60,9 +60,9 @@ If you haven't run the `LaCoGSEA_run.bat` (Windows), you can initialize the envi
 python -m venv .venv
 
 # 2. Activate based on your terminal:
-# CMD:        .venv\Scripts\activate
-# PowerShell: .\.venv\Scripts\Activate.ps1
-# Git Bash:   source .venv/Scripts/activate
+# CMD:          .venv\Scripts\activate
+# PowerShell:   .\.venv\Scripts\Activate.ps1
+# Linux/macOS:  source .venv/bin/activate
 
 # 3. Install core dependencies (Fastest way)
 python -m pip install torch --index-url https://download.pytorch.org/whl/cpu --prefer-binary
