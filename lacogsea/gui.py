@@ -297,7 +297,7 @@ def main():
                     "[Learn more](https://www.gsea-msigdb.org/)"
                 )
 
-    demo.launch(share=False, inbrowser=True)
+    demo.launch(share=False, inbrowser=True, server_name="127.0.0.1")
 
 if __name__ == "__main__":
     main()
