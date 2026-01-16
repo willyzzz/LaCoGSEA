@@ -28,6 +28,25 @@ from .summarize import (
 from .activity import calculate_sample_pathway_activity
 
 
+def load_data(path: Union[str, Path]) -> pd.DataFrame:
+    """Robustly load expression data from CSV, TXT, or TSV."""
+    path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"Input file not found: {path}")
+    
+    # For .txt or .tsv, try to auto-detect the delimiter (usually tab)
+    if path.suffix.lower() in [".txt", ".tsv"]:
+        try:
+            # engine='python' allows for auto-detection of delimiters
+            return pd.read_csv(path, sep=None, engine='python', index_col=0)
+        except Exception:
+            # Fallback for complex txt files
+            return pd.read_csv(path, sep="\t", index_col=0)
+            
+    # Default to standard CSV
+    return pd.read_csv(path, index_col=0)
+
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -83,8 +102,8 @@ def train_autoencoder(
     torch.manual_seed(seed)
     np.random.seed(seed)
 
-    train_df = pd.read_csv(train_csv, index_col=0)
-    test_df = pd.read_csv(test_csv, index_col=0)
+    train_df = load_data(train_csv)
+    test_df = load_data(test_csv)
     train_df, test_df = _align_train_test(train_df, test_df)
 
     train_df, test_df = _auto_log2_transform(train_df, test_df)
@@ -238,7 +257,7 @@ def run_full_pipeline(
 
     # 2. RNKs
     LOGGER.info("\n[2/6] 📉 Calculating Pearson Correlations...")
-    expr_df = pd.read_csv(test_csv, index_col=0)
+    expr_df = load_data(test_csv)
     corrs = calculate_pearson_correlation(train_res.embedding, expr_df)
     save_correlation_lists(corrs, output_dir)
     correlations_dir = output_dir / "correlations"

@@ -216,7 +216,7 @@ def main():
         with gr.Row():
             with gr.Column():
                 gr.Markdown("### 1. Data Upload")
-                data_input = gr.File(label="Dataset (CSV) - Leave empty to use example data", file_types=[".csv"])
+                data_input = gr.File(label="Dataset (CSV/TXT/TSV) - Leave empty to use example data", file_types=[".csv", ".txt", ".tsv"])
                 
                 gr.Markdown("### 2. Gene Set Selection")
                 gs_alias = gr.Dropdown(

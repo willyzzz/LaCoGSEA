@@ -269,8 +269,8 @@ def build_parser() -> argparse.ArgumentParser:
     gsea_help_msg = "Gene set: use built-in names (kegg, go_bp, reactome, c6) or a path to your own .gmt file."
 
     t = sub.add_parser("train", help="Train autoencoder and export embeddings")
-    t.add_argument("--train-csv", default=default_csv)
-    t.add_argument("--test-csv", default=default_csv)
+    t.add_argument("--train-csv", "--train", default=default_csv, help="Training expression matrix (CSV/TXT/TSV)")
+    t.add_argument("--test-csv", "--test", default=default_csv, help="Test expression matrix (CSV/TXT/TSV)")
     t.add_argument("--output", default="result/lacogsea_train")
     t.add_argument("--dim", type=int, default=32)
     t.add_argument("--batch-size", type=int, default=128)
@@ -319,8 +319,8 @@ def build_parser() -> argparse.ArgumentParser:
     ij.set_defaults(func=cmd_install_java)
 
     run = sub.add_parser("run", help="Run full pipeline")
-    run.add_argument("--train-csv", default=default_csv)
-    run.add_argument("--test-csv", default=default_csv)
+    run.add_argument("--train-csv", "--train", default=default_csv, help="Training expression matrix (CSV/TXT/TSV)")
+    run.add_argument("--test-csv", "--test", default=default_csv, help="Test expression matrix (CSV/TXT/TSV)")
     run.add_argument("--gene-set", default="kegg", help=gsea_help_msg)
     run.add_argument("--output", default="result")
     run.add_argument("--dim", type=int, default=4)
