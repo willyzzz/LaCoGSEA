@@ -80,13 +80,14 @@ lacogsea setup --yes
 ```
 
 ### 2. Run Full Pipeline
-To start the end-to-end analysis with default settings:
+To start the analysis with **built-in example data** and default settings, simply run:
 ```bash
 lacogsea run
 ```
+*Tip: This is the best way to verify your installation is working correctly.*
 
 ### 📋 CLI Parameters
-You can customize the pipeline using the following arguments:
+If you want to use your own data or change settings, use the following arguments. **If an argument is omitted, the default value below is used.**
 
 | Argument | Default | Description |
 | :--- | :--- | :--- |
