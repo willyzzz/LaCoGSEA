@@ -207,7 +207,7 @@ def main():
     .upload-container p {font-size: 0 !important;}
     .upload-container p::after {content: 'Drop File Here' !important; font-size: 16px !important;}
     """
-    with gr.Blocks(title="LaCoGSEA Graphical Interface") as demo:
+    with gr.Blocks(title="LaCoGSEA Graphical Interface", css=css) as demo:
         gr.Markdown("# 🚀 LaCoGSEA: Latent Correlation-GSEA")
         gr.Markdown("Interpret your Autoencoder latent space without touching the command line.")
         
@@ -286,7 +286,7 @@ def main():
                     "[Learn more](https://www.gsea-msigdb.org/)"
                 )
 
-    demo.launch(share=False, inbrowser=True, css=css)
+    demo.launch(share=False, inbrowser=True)
 
 if __name__ == "__main__":
     main()
