@@ -207,7 +207,7 @@ def main():
     .upload-container p {font-size: 0 !important;}
     .upload-container p::after {content: 'Drop File Here' !important; font-size: 16px !important;}
     """
-    with gr.Blocks(title="LaCoGSEA Graphical Interface", show_api=False) as demo:
+    with gr.Blocks(title="LaCoGSEA Graphical Interface") as demo:
         gr.Markdown("# 🚀 LaCoGSEA: Latent Correlation-GSEA")
         gr.Markdown("Interpret your Autoencoder latent space without touching the command line.")
         
