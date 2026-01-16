@@ -5,7 +5,7 @@ LaCoGSEA is a powerful tool designed to interpret the latent space of autoencode
 ---
 
 ### 📋 Prerequisites
-- **Python**: 3.8 to 3.12 (Recommended: 3.10)
+- **Python**: 3.8 to 3.13 (Recommended: 3.10)
 - **Java**: JRE 11+ or 17+ (Will be installed automatically by the GUI if missing)
 
 ---
@@ -20,7 +20,7 @@ The easiest way to use LaCoGSEA is through its built-in Graphical User Interface
 3. Your browser will open the interface automatically.
 
 ### ❓ Troubleshooting Python
-LaCoGSEA requires Python 3.8-3.12. If you don't have it:
+LaCoGSEA requires Python 3.8-3.13. If you don't have it:
 - [Download Python from here](https://www.python.org/downloads/). **Crucial**: Tick "Add Python to PATH" during install.
 
 *Note: Environment checks (like Java) and data transformations are handled automatically upon clicking 'Run' in the GUI.*
