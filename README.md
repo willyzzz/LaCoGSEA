@@ -91,7 +91,7 @@ If you want to use your own data or change settings, use the following arguments
 
 | Argument | Default | Description |
 | :--- | :--- | :--- |
-| `--train-csv` / `--train` | *(Example)* | Path to training data (CSV, TXT, or TSV). |
+| `--train-csv` / `--train` | *(Example)* | Path to training data (CSV, TXT, or TSV). <br> **Rows**: Samples, **Columns**: Genes. <br> **Note**: Gene Symbols recommended. Example uses **GSE126848**. |
 | `--dim` | `4` | Number of latent dimensions to extract. |
 | `--epochs` | `100` | AE training epochs. |
 | `--batch-size` | `128` | Training batch size. |

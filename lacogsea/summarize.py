@@ -35,13 +35,22 @@ def extract_pathway_stats(report_df: pd.DataFrame) -> pd.DataFrame:
     fdr_col = _find_col(report_df, ["FDR q-val", "FDR q-value", "fdr_qval", "FDR", "fdr", "fdr_q-val", "q-value"])
     
     if not name_col or not nes_col or not fdr_col:
-        # Debug logging is useful here but can be verbose, so we keep it implicit in the returned empty DF
         return pd.DataFrame()
+
+    def clean_numeric(val):
+        if pd.isna(val) or str(val).strip() == "---":
+            return np.nan
+        # Handle cases like "< 0.001" or "> 1.0"
+        s = str(val).replace("<", "").replace(">", "").strip()
+        try:
+            return float(s)
+        except ValueError:
+            return np.nan
 
     df = pd.DataFrame({
         "Pathway": report_df[name_col].astype(str),
-        "NES": pd.to_numeric(report_df[nes_col], errors="coerce"),
-        "FDR": pd.to_numeric(report_df[fdr_col], errors="coerce")
+        "NES": report_df[nes_col].apply(clean_numeric),
+        "FDR": report_df[fdr_col].apply(clean_numeric)
     })
     return df.dropna().drop_duplicates("Pathway").set_index("Pathway")
 

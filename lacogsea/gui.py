@@ -217,6 +217,13 @@ def main():
             with gr.Column():
                 gr.Markdown("### 1. Data Upload")
                 data_input = gr.File(label="Dataset (CSV/TXT/TSV) - Leave empty to use example data", file_types=[".csv", ".txt", ".tsv"])
+                gr.Markdown("""
+                **📋 Data Requirements:**
+                - **Gene Symbols**: e.g., *TP53* (Required for built-in Gene Sets).
+                - **Ensembl IDs**: e.g., *ENSG...* (**Will cause an error and stop**).
+                - **Rows**: Samples | **Columns**: Genes.
+                - **Example**: Powered by **GSE126848**.
+                """)
                 
                 gr.Markdown("### 2. Gene Set Selection")
                 gs_alias = gr.Dropdown(

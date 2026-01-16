@@ -104,6 +104,19 @@ def train_autoencoder(
 
     train_df = load_data(train_csv)
     test_df = load_data(test_csv)
+    
+    # Check for Ensembl IDs and prevent execution (GSEA GMTs usually use Gene Symbols)
+    sample_cols = train_df.columns[:10]
+    from .gene_mapping import is_ensembl_id
+    if any(is_ensembl_id(str(c)) for c in sample_cols):
+        error_msg = (
+            "Detected Ensembl IDs (e.g., ENSG...). LaCoGSEA built-in Gene Sets (KEGG, etc.) require Gene Symbols. "
+            "Please convert your Gene IDs to Symbols before running. "
+            "Example format: TP53, BRCA1, etc."
+        )
+        LOGGER.error(f"   ❌ [Input Error] {error_msg}")
+        raise ValueError(error_msg)
+
     train_df, test_df = _align_train_test(train_df, test_df)
 
     train_df, test_df = _auto_log2_transform(train_df, test_df)
@@ -374,8 +387,12 @@ def run_full_pipeline(
     # Use max 32 dims for visualization
     viz_dims = min(dim, 32)
     top_df = get_top_pathways_for_dims(gsea_output_dir, viz_dims, top_n=5)
-    plot_path = output_dir / "top_pathways_heatmap.png"
-    plot_top_pathways_heatmap(top_df, plot_path)
+    
+    if top_df is None or top_df.empty:
+        LOGGER.warning("   ⚠️  No significant pathways found (FDR < 0.05) across any dimension. Heatmap will not be generated.")
+    else:
+        plot_path = output_dir / "top_pathways_heatmap.png"
+        plot_top_pathways_heatmap(top_df, plot_path)
 
     LOGGER.info(f"\n[DONE] Final output at: {output_dir}")
     return nes_path
