@@ -153,16 +153,22 @@ def cmd_run(args: argparse.Namespace) -> None:
     java_ok = False
     try:
         res = subprocess.run([java_cmd, "-version"], capture_output=True, text=True)
-        v_info = res.stderr.split('\n')[0]
-        if any(v in v_info for v in ["17", "18", "19", "20", "21", "22", "23"]):
-            java_ok = True
+        v_info = (res.stderr or "").split('\n')[0]
+        import re
+        # Look for version "17... or version "1.8...
+        v_match = re.search(r'version "(\d+)', v_info)
+        if v_match:
+            major_v = int(v_match.group(1))
+            if major_v >= 17: java_ok = True
+        elif " 17" in v_info or " 21" in v_info: # Fallback for some formats
+             java_ok = True
     except:
         pass
 
     if not java_ok:
         logging.info("Compatible Java (17+) not found. Attempting automatic installation...")
         if not install_internal_java(gsea_dir):
-            logging.error("Failed to install Java. GSEA might fail.")
+            logging.error("Failed to install Java. GSEA might fail with 'Unsupported major.minor version 61.0'.")
         else:
             logging.info("Portable Java (17) installed successfully.")
 
@@ -193,13 +199,19 @@ def cmd_setup(args: argparse.Namespace) -> None:
     java_cmd = find_java_cmd(gsea_dir)
     try:
         res = subprocess.run([java_cmd, "-version"], capture_output=True, text=True, check=True)
-        # Java outputs version to stderr
         v_info = res.stderr.split('\n')[0]
         print(f"[OK] Java found: {v_info}")
         
-        # Simple version check (looking for "17", "18", "21" etc)
-        if not any(v in v_info for v in ["17", "18", "19", "20", "21", "22", "23"]):
-            print("[!!] WARNING: Your Java version might be too old. GSEA 4.4.0 requires Java 17+.")
+        # Rigorous version check
+        import re
+        v_match = re.search(r'version "(\d+)', v_info)
+        if v_match:
+            major_v = int(v_match.group(1))
+            if major_v < 17:
+                print(f"[!!] WARNING: Java {major_v} is too old. GSEA 4.4.0 requires Java 17+ (v61.0).")
+                print("     Please run 'lacogsea install-java' to fix this.")
+        elif not any(v in v_info for v in [" 17.", " 21."]):
+            print("[!!] WARNING: Could not verify Java version. If it's below 17, GSEA will fail.")
             print("     Please run 'lacogsea install-java' to get a compatible version.")
         
         java_found = True
