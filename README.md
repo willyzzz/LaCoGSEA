@@ -4,6 +4,12 @@ LaCoGSEA is a powerful tool designed to interpret the latent space of autoencode
 
 ---
 
+### 📋 Prerequisites
+- **Python**: 3.8 to 3.12 (Recommended: 3.10)
+- **Java**: JRE 11+ or 17+ (Will be installed automatically by the GUI if missing)
+
+---
+
 ## 🎨 User Interface (Easiest Way to Run)
 
 The easiest way to use LaCoGSEA is through its built-in Graphical User Interface. 
@@ -38,50 +44,45 @@ lacogsea-gui
 - **Auto Data Transformation**: Intelligently detects data scale and applies `Log2(x + 1)` only when necessary.
 - **Robustness & Resume**: Built-in "Resume Mode" skips already completed dimensions if a run is interrupted.
 - **Detailed Error Diagnosis**: Captures and reports specific GSEA errors directly in the console/GUI.
-- **Visual Interpretation**: Automatically generates a "Top Pathways Heatmap" focusing on significant (FDR < 0.05) biological signals.
-- **Built-in Pathways**: Quick access to `kegg`, `reactome`, `go_bp`, and `c6` via aliases.
 
 ---
 
-## 💻 CLI Usage (For Power Users)
+## 🛠️ CLI Usage
 
-### 1. Installation & Setup
+For advanced users, LaCoGSEA provides a comprehensive command line interface.
+
+### 1. Setup Environment
+Ensure Java is ready:
 ```bash
-pip install -e .
 lacogsea setup --yes
 ```
 
 ### 2. Run Full Pipeline
 ```bash
-# Run the built-in demo
-lacogsea run
-
-# Run with custom data
-lacogsea run --train-csv my_data.csv --gene-set kegg --dim 32
+lacogsea run --train-csv data.csv --dim 4 --gene-set kegg --output result
 ```
 
-### 3. Output Structure
-`result/{gmt_name}_{timestamp}/`
-- `nes.tsv`: Master matrix of NES scores (Dimensions x Pathways).
-- `pathway_activity.tsv`: Sample-level activity matrix (Samples x Pathways).
-- `top_pathways_heatmap.png`: High-quality summary visualization.
-- `all_gsea_reports.zip`: Packaged raw GSEA HTML reports.
+### 3. Step-by-Step (Internal Commands)
+- `lacogsea train`: Train the Autoencoder and save embedding.
+- `lacogsea rnks`: Generate `.rnk` files for GSEA based on correlations.
+- `lacogsea gsea`: Run GSEA for specific dimensions.
+- `lacogsea summarize`: Aggregate GSEA results into a NES matrix.
 
 ---
 
-## 🛠️ Advanced Features Explained
+## 📑 Result Interpretation
 
-### Smart Resume Mode
-If your job crashes, pointing to the same output folder will skip already completed dimensions.
-
-### Automatic Log Detection
-If the maximum value of your input data is `> 50`, it automatically applies `Log2(x+1)`.
+After running, the `result/` folder will contain:
+- `nes.tsv`: The Normalized Enrichment Score (NES) matrix (Dimensions vs Pathways).
+- `pathway_activity.tsv`: The calculated Pathway Activity Score for each sample.
+- `top_pathways_heatmap.png`: High-resolution summary plot.
+- `gsea/`: Raw output from the GSEA software for deep dives into specific pathways.
 
 ---
 
-## ⚖️ Third-party software
+## 📄 License & Attribution
 
-LaCoGSEA interfaces with the Gene Set Enrichment Analysis (GSEA) software developed by the Broad Institute. Use of GSEA is subject to the Broad Institute GSEA License and is limited to academic, non-commercial use.
+- **License**: LaCoGSEA is released under the MIT License.
+- **Third-party software**: This tool interfaces with the Broad Institute's **GSEA software**. User of GSEA is subject to GSEA's license (Academic use only).
 
-## 📄 License
-MIT License.
+Developed by the LaCoGSEA Team.
