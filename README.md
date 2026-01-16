@@ -80,8 +80,31 @@ lacogsea setup --yes
 ```
 
 ### 2. Run Full Pipeline
+To start the end-to-end analysis with default settings:
 ```bash
-lacogsea run --train-csv data.csv --dim 4 --gene-set kegg --output result
+lacogsea run
+```
+
+### 📋 CLI Parameters
+You can customize the pipeline using the following arguments:
+
+| Argument | Default | Description |
+| :--- | :--- | :--- |
+| `--train-csv` | *(Example)* | Path to training data CSV. |
+| `--dim` | `4` | Number of latent dimensions to extract. |
+| `--epochs` | `100` | AE training epochs. |
+| `--batch-size` | `128` | Training batch size. |
+| `--gene-set` | `kegg` | Gene set alias (`kegg`, `go_bp`, etc.) or custom `.gmt` path. |
+| `--scoring-scheme`| `weighted`| GSEA scoring method (`weighted`, `classic`, etc.). |
+| `--output` | `result` | Output directory. |
+| `--permutations`| `1000` | GSEA permutation count. |
+| `--min-size` | `15` | Minimum gene set size. |
+| `--max-size` | `500` | Maximum gene set size. |
+| `--no-make-sets`| `False` | Disable detailed GSEA reports (faster). |
+
+Example with custom parameters:
+```bash
+lacogsea run --dim 10 --epochs 200 --gene-set go_bp
 ```
 
 ### 3. Step-by-Step (Internal Commands)
