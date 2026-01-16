@@ -147,6 +147,25 @@ def cmd_run(args: argparse.Namespace) -> None:
     if gene_set_path == args.gene_set and not os.path.exists(gene_set_path):
          logging.warning(f"Note: Gene set '{args.gene_set}' not found as file or builtin. Passing raw string to GSEA.")
 
+    # Auto-env check for CLI
+    gsea_dir = find_gsea_dir()
+    java_cmd = find_java_cmd(gsea_dir)
+    java_ok = False
+    try:
+        res = subprocess.run([java_cmd, "-version"], capture_output=True, text=True)
+        v_info = res.stderr.split('\n')[0]
+        if any(v in v_info for v in ["17", "18", "19", "20", "21", "22", "23"]):
+            java_ok = True
+    except:
+        pass
+
+    if not java_ok:
+        logging.info("Compatible Java (17+) not found. Attempting automatic installation...")
+        if not install_internal_java(gsea_dir):
+            logging.error("Failed to install Java. GSEA might fail.")
+        else:
+            logging.info("Portable Java (17) installed successfully.")
+
     run_full_pipeline(
         train_csv=args.train_csv,
         test_csv=args.test_csv,
@@ -178,12 +197,22 @@ def cmd_setup(args: argparse.Namespace) -> None:
         except Exception:
             print(f"[!!] Java NOT found using: {java_cmd}")
     else:
-        try:
-            subprocess.run(["java", "-version"], capture_output=True, check=True)
-            print("[OK] System Java found.")
-            java_found = True
-        except Exception:
-            print("[!!] System Java NOT found.")
+    java_cmd = find_java_cmd(find_gsea_dir())
+    try:
+        res = subprocess.run([java_cmd, "-version"], capture_output=True, text=True, check=True)
+        # Java outputs version to stderr
+        v_info = res.stderr.split('\n')[0]
+        print(f"[OK] Java found: {v_info}")
+        
+        # Simple version check (looking for "17", "18", "21" etc)
+        # Java version strings can be "17.0.x", "11.0.x", "1.8.x"
+        if not any(v in v_info for v in ["17", "18", "19", "20", "21", "22", "23"]):
+            print("[!!] WARNING: Your Java version might be too old. GSEA 4.4.0 requires Java 17+.")
+            print("     Please run 'lacogsea install-java' to get a compatible version.")
+        
+        java_found = True
+    except Exception:
+        print("[!!] Java NOT found or failed to run.")
 
     gsea_cli = find_gsea_cli()
     if gsea_cli:
