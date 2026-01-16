@@ -48,7 +48,6 @@ def run_pipeline_gui_stream(
     min_size,
     max_size,
     scoring_scheme,
-    scoring_scheme,
     no_make_sets,
     workers
 ):
