@@ -7,11 +7,12 @@ import pandas as pd
 
 def _clean_columns(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
+    # Normalize all whitespace (including non-breaking spaces) to a single space
     df.columns = (
         df.columns.astype(str)
+        .str.replace(r"<.*?>", "", regex=True) # Remove HTML tags
+        .str.replace(r"\s+", " ", regex=True)  # Normalize whitespace
         .str.strip()
-        .str.replace(r"<.*?>", "", regex=True)
-        .str.replace("  ", " ")
     )
     return df
 
@@ -29,11 +30,12 @@ def read_gsea_report_tsv(path: Union[str, Path]) -> pd.DataFrame:
     return _clean_columns(df)
 
 def extract_pathway_stats(report_df: pd.DataFrame) -> pd.DataFrame:
-    name_col = _find_col(report_df, ["NAME", "Term", "pathway"])
-    nes_col = _find_col(report_df, ["NES", "nes"])
-    fdr_col = _find_col(report_df, ["FDR q-val", "FDR q-value", "fdr_qval", "FDR", "fdr"])
+    name_col = _find_col(report_df, ["NAME", "Term", "pathway", "Pathway"])
+    nes_col = _find_col(report_df, ["NES", "nes", "Normalized Enrichment Score"])
+    fdr_col = _find_col(report_df, ["FDR q-val", "FDR q-value", "fdr_qval", "FDR", "fdr", "fdr_q-val", "q-value"])
     
     if not name_col or not nes_col or not fdr_col:
+        # Debug logging is useful here but can be verbose, so we keep it implicit in the returned empty DF
         return pd.DataFrame()
 
     df = pd.DataFrame({

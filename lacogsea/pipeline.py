@@ -371,8 +371,8 @@ def run_full_pipeline(
     from .summarize import get_top_pathways_for_dims
     from .plotting import plot_top_pathways_heatmap
     
-    # Use max 16 dims as requested
-    viz_dims = min(dim, 16)
+    # Use max 32 dims for visualization
+    viz_dims = min(dim, 32)
     top_df = get_top_pathways_for_dims(gsea_output_dir, viz_dims, top_n=5)
     plot_path = output_dir / "top_pathways_heatmap.png"
     plot_top_pathways_heatmap(top_df, plot_path)
