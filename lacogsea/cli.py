@@ -305,6 +305,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> None:
+    # Fix Windows encoding issues for emojis in terminal
+    if sys.platform == "win32":
+        try:
+            if hasattr(sys.stdout, 'reconfigure'):
+                sys.stdout.reconfigure(encoding='utf-8')
+            if hasattr(sys.stderr, 'reconfigure'):
+                sys.stderr.reconfigure(encoding='utf-8')
+        except Exception:
+            pass
+
     parser = build_parser()
     args = parser.parse_args(argv)
     setup_logging(args.verbose)
