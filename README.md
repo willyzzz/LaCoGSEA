@@ -6,7 +6,7 @@ LaCoGSEA is a powerful tool designed to interpret the latent space of autoencode
 
 ### 📋 Prerequisites
 - **Python**: 3.8 to 3.13
-  - **Recommended for GUI**: Python 3.10 or 3.11
+  - **Recommended for GUI**: Python 3.8 to 3.11
   - **⚠️ Python 3.12+ Users**: The GUI has known compatibility issues due to Gradio framework limitations. 
     - **Recommended**: Use **CLI mode** (see below) or downgrade to **Python 3.11**
 - **Java**: JRE 11+ or 17+ (Will be installed automatically if missing)
