@@ -13,9 +13,9 @@ LaCoGSEA is a powerful tool designed to interpret the latent space of autoencode
 
 ---
 
-## 🎨 User Interface (Recommended for Python 3.8-3.11)
+## 🎨 User Interface (For Python 3.8-3.11)
 
-> **⚠️ Python 3.12+ Users**: Please skip to the [CLI Usage](#-cli-usage) section below.
+> **⚠️ Python 3.12+ Users**: GUI is **not compatible**. Please use [CLI mode](#️-cli-usage-recommended-for-python-312) instead.
 
 The easiest way to use LaCoGSEA is through its built-in Graphical User Interface. 
 
@@ -139,4 +139,4 @@ After running, the `result/` folder will contain:
 - **License**: LaCoGSEA is released under the MIT License.
 - **Third-party software**: This tool interfaces with the Broad Institute's **GSEA software**. User of GSEA is subject to GSEA's license (Academic use only).
 
-Developed by the LaCoGSEA Team.
+**Developed by Zheng Zhiwei**
