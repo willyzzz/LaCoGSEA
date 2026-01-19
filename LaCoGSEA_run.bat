@@ -44,12 +44,14 @@ del get-pip.py
 if exist "%RUNTIME_DIR%\.installed_mark" goto LAUNCH
 
 echo [INFO] Installing locked dependencies from requirements.txt...
-"%PYTHON_EXE%" -m pip install --upgrade pip
+"%PYTHON_EXE%" -m pip install --upgrade pip --no-warn-script-location
+echo [Installing] Build tools (setuptools, wheel)...
+"%PYTHON_EXE%" -m pip install setuptools==68.0.0 wheel==0.40.0 --no-warn-script-location
 echo [Installing] PyTorch (CPU 2.4.1)...
-"%PYTHON_EXE%" -m pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --prefer-binary
+"%PYTHON_EXE%" -m pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --prefer-binary --no-warn-script-location
 echo [Installing] Other core packages...
-"%PYTHON_EXE%" -m pip install -r requirements.txt --prefer-binary
-"%PYTHON_EXE%" -m pip install -e . --no-deps
+"%PYTHON_EXE%" -m pip install -r requirements.txt --prefer-binary --no-warn-script-location
+"%PYTHON_EXE%" -m pip install -e . --no-deps --no-warn-script-location
 
 if errorlevel 1 goto FAIL
 echo. > "%RUNTIME_DIR%\.installed_mark"
