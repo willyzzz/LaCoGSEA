@@ -93,6 +93,18 @@ lacogsea run
 ```
 *Tip: This is the best way to verify your installation is working correctly.*
 
+---
+
+## 📂 Built-in Example Data
+To help you get started immediately, LaCoGSEA includes a pre-processed dataset (**GSE126848**) from the NCBI GEO database.
+- **Source**: Liver biopsy samples from patients with NASH and healthy controls.
+- **Status**: 
+    - **Gene Symbols**: All gene IDs have been mapped to standardized symbols.
+    - **Pre-log**: The data is already **Log2-transformed** (`Log2(x + 1)`).
+- **Format**: Standard CSV where **Rows** are samples and **Columns** are gene symbols.
+
+---
+
 ### 📋 CLI Parameters
 If you want to use your own data or change settings, use the following arguments. **If an argument is omitted, the default value below is used.**
 
@@ -131,6 +143,38 @@ After running, the `result/` folder will contain:
 - `pathway_activity.tsv`: The calculated Pathway Activity Score for each sample.
 - `top_pathways_heatmap.png`: High-resolution summary plot.
 - `gsea/`: Raw output from the GSEA software for deep dives into specific pathways.
+
+---
+
+## 🔬 Evaluation & Figure Generation
+
+The `evaluation/` directory contains the source code used to generate the figures presented in the manuscript. These scripts are organized into encapsulated pipelines for reproduction.
+
+### 📦 Installation for Evaluation
+
+To run the evaluation scripts, ensure you have installed the package and all additional dependencies:
+
+```bash
+# Install core package
+pip install -e .
+
+# Install evaluation dependencies
+pip install -r requirements.txt
+```
+
+### 🚀 Running Figure Pipelines
+
+The scripts for each figure are located in their respective subdirectories within `evaluation/`:
+
+| Figure | Directory | Description |
+| :--- | :--- | :--- |
+| **Figure 2** | `evaluation/figure2_stability/` | **Stability & Negative Control**: Saturation analysis and specificity verification. |
+| **Figure 3** | `evaluation/figure3_subtypes/` | **Biological Representation**: Breast cancer subtype clustering. |
+| **Figure 4** | `evaluation/figure4_clinical/` | **Clinical Relevance**: Survival analysis and cross-cohort generalization. |
+| **Figure 5** | `evaluation/figure5_benchmarking/` | **Benchmarking**: Comparison against standard DE/GSEA baselines. |
+
+### 📂 Prerequisites for Data
+By default, these scripts attempt to use processed results. If you are generating results from scratch, ensure you have downloaded the required datasets (DLBCL, Heart Failure, AD, Trauma) as described in the supplementary documentation.
 
 ---
 
