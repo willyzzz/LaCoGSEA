@@ -94,5 +94,5 @@ The `result/` folder will contain:
 - **Third-Party Software Attribution**:
   - This tool is a **third-party wrapper** and high-level interface. It is **not** an official product of the Broad Institute.
   - LaCoGSEA interfaces with the **GSEA (Gene Set Enrichment Analysis)** software developed by the Broad Institute.
-  - Users of LaCoGSEA are bound by the [GSEA license terms](https://www.gsea-msigdb.org/gsea/license.jsp) (Free for academic use; commercial users require a license from the Broad Institute).
+  - Users of LaCoGSEA are bound by the [GSEA license terms](https://www.gsea-msigdb.org/gsea/license_terms_list.jsp) (Free for academic use; commercial users require a license from the Broad Institute).
   - All GSEA algorithms and MSigDB gene sets are property of the Broad Institute and UC San Diego.
