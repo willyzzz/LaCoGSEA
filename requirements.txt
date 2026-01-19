@@ -1,4 +1,5 @@
 # Fixed versions based on current working environment
+# This ensures stability across different Python versions (3.8 - 3.12+)
 numpy==1.24.4
 pandas==2.0.3
 matplotlib==3.7.5
@@ -12,3 +13,11 @@ scipy==1.10.1
 scikit-learn==1.3.2
 pillow==10.4.0
 PyYAML==6.0.1
+
+# Transitive dependencies that often cause conflicts if not pinned
+pydantic==2.10.2
+fastapi==0.124.4
+typing_extensions==4.13.2
+starlette==0.44.0
+uvicorn==0.33.0
+anyio==4.0.0
