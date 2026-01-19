@@ -30,6 +30,13 @@ You can use the CLI directly via the internally managed environment. Open your t
 .python_runtime\python.exe -m lacogsea.cli run --dim 10 --epochs 200
 ```
 
+#### Run with Example Data (GSE126848)
+To verify everything is working, you can run the full pipeline using the built-in **GSE126848** (NASH vs Healthy liver) dataset:
+```bash
+.python_runtime\python.exe -m lacogsea.cli run --dim 4 --epochs 100 --gene-set kegg
+```
+*No path is required for the built-in data.*
+
 #### Full Parameter List
 | Argument | Default | Description |
 | :--- | :--- | :--- |
