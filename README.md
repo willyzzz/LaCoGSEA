@@ -4,101 +4,36 @@ LaCoGSEA is a powerful tool designed to interpret the latent space of autoencode
 
 ---
 
-### 📋 Prerequisites (Windows)
-- **None!**: For Windows users, just download the code and run. The system will automatically set up a verified **Python 3.8.8** environment locally.
-- **Java**: JRE 11+ or 17+ (Will be installed automatically by the app if missing).
+## � Quick Start (Windows)
 
-### 📋 Prerequisites (Linux/macOS/Manual)
-- **Python**: 3.8 to 3.11 (Recommended)
-- **Java**: JRE 11+ or 17+
+LaCoGSEA features a **Zero-Setup** environment manager. You don't need to install Python or manage libraries yourself.
 
----
-
-## 🎨 User Interface (One-Click)
-
-The easiest way to use LaCoGSEA is through its built-in Graphical User Interface, which now comes with a **self-contained environment manager**.
-
-### 🚀 Quick Start (Windows)
-1. **Double-click `LaCoGSEA_run.bat`**.
-2. **Sit back**: The script will automatically download a verified Python 3.8.8 runtime and all necessary dependencies (PyTorch, Gradio, etc.) into a local folder.
-3. **Run**: Your browser will open the interface automatically once the environment is ready.
-
-### ❓ Why a local runtime?
-To ensure 100% reproducibility and avoid the "it works on my machine" problem, LaCoGSEA now locks the entire environment (Python + all libraries) to a verified state. This bypasses any Python version conflicts you might have on your system.
-
-### Manual Launch (Already Initialized)
-If the environment is already set up, the `.bat` script will launch instantly. If you need to run it from a terminal:
-- **Windows**: `.python_runtime\python.exe -m lacogsea.gui`
+1. **Download & Extract** the project.
+2. **Double-click `LaCoGSEA_run.bat`**.
+3. **Wait for First-run**: The first launch will automatically configure a dedicated, verified environment. This takes about **5-10 minutes** depending on your internet speed.
+4. **Instant Launch**: Once setup is complete, future runs will start instantly.
 
 ---
 
-## ✨ Key Features
+## 🎨 User Interface & 🛠️ CLI
 
-- **Consolidated GSEA Engine**: Powered exclusively by the high-performance GSEA Java CLI (bundled or system-installed).
-- **Auto Data Transformation**: Intelligently detects data scale and applies `Log2(x + 1)` only when necessary.
-- **Robustness & Resume**: Built-in "Resume Mode" skips already completed dimensions if a run is interrupted.
-- **Detailed Error Diagnosis**: Captures and reports specific GSEA errors directly in the console/GUI.
+Both the Graphical Interface and Command Line Interface are ready to use out of the box.
 
----
+### 1. Graphical User Interface (GUI)
+Simply run the `LaCoGSEA_run.bat`. It will automatically launch the web interface in your default browser.
 
-## 🛠️ CLI Usage (Cross-Platform)
+### 2. Command Line Interface (CLI)
+You can use the CLI directly via the internally managed environment. Open your terminal in the project folder.
 
-**✅ Fully compatible with Python 3.8-3.11**
-
-For users on Linux/macOS or those who prefer the terminal.
-
-### 1. Initial Setup
-If you haven't run the `LaCoGSEA_run.bat` (Windows), you can initialize the environment manually:
-
+#### Basic Usage
 ```bash
-# 1. Create environment
-python -m venv .venv
-
-# 2. Activate based on your terminal:
-# CMD:          .venv\Scripts\activate
-# PowerShell:   .\.venv\Scripts\Activate.ps1
-# Linux/macOS:  source .venv/bin/activate
-
-# 3. Install core dependencies (Fastest way)
-python -m pip install torch --index-url https://download.pytorch.org/whl/cpu --prefer-binary
-python -m pip install -r requirements.txt --prefer-binary
-python -m pip install -e . --no-deps
+.python_runtime\python.exe -m lacogsea.cli run --dim 10 --epochs 200
 ```
 
-### 2. Basic Commands
-Once the environment is activated, the `lacogsea` command is ready.
-
-### 1. Setup Environment
-Ensure Java is ready:
-```bash
-lacogsea setup --yes
-```
-
-### 2. Run Full Pipeline
-To start the analysis with **built-in example data** and default settings, simply run:
-```bash
-lacogsea run
-```
-*Tip: This is the best way to verify your installation is working correctly.*
-
----
-
-## 📂 Built-in Example Data
-To help you get started immediately, LaCoGSEA includes a pre-processed dataset (**GSE126848**) from the NCBI GEO database.
-- **Source**: Liver biopsy samples from patients with NASH and healthy controls.
-- **Status**: 
-    - **Gene Symbols**: All gene IDs have been mapped to standardized symbols.
-    - **Pre-log**: The data is already **Log2-transformed** (`Log2(x + 1)`).
-- **Format**: Standard CSV where **Rows** are samples and **Columns** are gene symbols.
-
----
-
-### 📋 CLI Parameters
-If you want to use your own data or change settings, use the following arguments. **If an argument is omitted, the default value below is used.**
-
+#### Full Parameter List
 | Argument | Default | Description |
 | :--- | :--- | :--- |
-| `--train-csv` / `--train` | *(Example)* | Path to training data (CSV, TXT, or TSV). <br> **Rows**: Samples, **Columns**: Genes. <br> **Note**: Gene Symbols recommended. Example uses **GSE126848**. |
+| `--train` / `--train-csv` | *(Example)* | Path to training data (CSV, TXT, or TSV). <br> **Rows**: Samples, **Columns**: Genes. |
 | `--dim` | `4` | Number of latent dimensions to extract. |
 | `--epochs` | `100` | AE training epochs. |
 | `--batch-size` | `128` | Training batch size. |
@@ -111,63 +46,41 @@ If you want to use your own data or change settings, use the following arguments
 | `--max-size` | `500` | Maximum gene set size. |
 | `--no-make-sets`| `False` | Disable detailed GSEA reports (faster). |
 
-Example with custom parameters:
-```bash
-lacogsea run --dim 10 --epochs 200 --gene-set go_bp
-```
+#### Step-by-Step (Internal Commands)
+If you need more control, you can run individual steps:
+- `.python_runtime\python.exe -m lacogsea.cli train`: Train Autoencoder.
+- `.python_runtime\python.exe -m lacogsea.cli rnks`: Generate `.rnk` files.
+- `.python_runtime\python.exe -m lacogsea.cli gsea`: Run GSEA.
+- `.python_runtime\python.exe -m lacogsea.cli summarize`: Aggregate results.
 
-### 3. Step-by-Step (Internal Commands)
-- `lacogsea train`: Train the Autoencoder and save embedding.
-- `lacogsea rnks`: Generate `.rnk` files for GSEA based on correlations.
-- `lacogsea gsea`: Run GSEA for specific dimensions.
-- `lacogsea summarize`: Aggregate GSEA results into a NES matrix.
+---
+
+## ✨ Key Features
+
+- **Zero-Setup Environment**: Self-contained runtime ensures it works on any Windows machine without version conflicts.
+- **Consolidated GSEA Engine**: Powered by high-performance GSEA Java CLI (automatically configured).
+- **Auto Data Transformation**: Intelligently detects data scale and applies `Log2(x + 1)` only when necessary.
+- **Robustness & Resume**: Built-in "Resume Mode" skips already completed dimensions if a run is interrupted.
+
+---
+
+## 📂 Built-in Example Data
+To help you get started immediately, LaCoGSEA includes a pre-processed dataset (**GSE126848**) from the NCBI GEO database.
+- **Source**: Liver biopsy samples from patients with NASH and healthy controls.
+- **Status**: Already Log2-transformed and mapped to gene symbols.
+
+---
 
 ---
 
 ## 📑 Result Interpretation
-
-After running, the `result/` folder will contain:
-- `nes.tsv`: The Normalized Enrichment Score (NES) matrix (Dimensions vs Pathways).
+The `result/` folder will contain:
+- `nes.tsv`: The Normalized Enrichment Score (NES) matrix.
 - `pathway_activity.tsv`: The calculated Pathway Activity Score for each sample.
 - `top_pathways_heatmap.png`: High-resolution summary plot.
-- `gsea/`: Raw output from the GSEA software for deep dives into specific pathways.
-
----
-
-## 🔬 Evaluation & Figure Generation
-
-The `evaluation/` directory contains the source code used to generate the figures presented in the manuscript. These scripts are organized into encapsulated pipelines for reproduction.
-
-### 📦 Installation for Evaluation
-
-To run the evaluation scripts, ensure you have installed the package and all additional dependencies:
-
-```bash
-# Install core package
-pip install -e .
-
-# Install evaluation dependencies
-pip install -r requirements.txt
-```
-
-### 🚀 Running Figure Pipelines
-
-The scripts for each figure are located in their respective subdirectories within `evaluation/`:
-
-| Figure | Directory | Description |
-| :--- | :--- | :--- |
-| **Figure 2** | `evaluation/figure2_stability/` | **Stability & Negative Control**: Saturation analysis and specificity verification. |
-| **Figure 3** | `evaluation/figure3_subtypes/` | **Biological Representation**: Breast cancer subtype clustering. |
-| **Figure 4** | `evaluation/figure4_clinical/` | **Clinical Relevance**: Survival analysis and cross-cohort generalization. |
-| **Figure 5** | `evaluation/figure5_benchmarking/` | **Benchmarking**: Comparison against standard DE/GSEA baselines. |
-
-### 📂 Prerequisites for Data
-By default, these scripts attempt to use processed results. If you are generating results from scratch, ensure you have downloaded the required datasets (DLBCL, Heart Failure, AD, Trauma) as described in the supplementary documentation.
 
 ---
 
 ## 📄 License & Attribution
-
 - **License**: LaCoGSEA is released under the MIT License.
-- **Third-party software**: This tool interfaces with the Broad Institute's **GSEA software**. User of GSEA is subject to GSEA's license (Academic use only).
-
+- **Third-party**: Interfaces with Broad Institute's GSEA software (Academic use only).
