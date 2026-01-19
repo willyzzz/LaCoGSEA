@@ -1,53 +1,62 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 
 echo ==================================================
-echo         LaCoGSEA One-Click Launcher
+echo         LaCoGSEA Universal Launcher
+echo    (Local Runtime: Python 3.8.8 x64 Verified)
 echo ==================================================
 
-:: 1. Check Python
-python --version >nul 2>&1
-if errorlevel 1 goto NOPYTHON
+set "RUNTIME_DIR=%~dp0.python_runtime"
+set "PYTHON_EXE=%RUNTIME_DIR%\python.exe"
+set "PIP_EXE=%RUNTIME_DIR%\Scripts\pip.exe"
 
-:: 2. Create/Activate venv
-if exist .venv goto ACTIVATE
-echo [INFO] Creating isolated environment (.venv)...
-python -m venv .venv
-if errorlevel 1 goto VENV_FAIL
+:: 1. Check for Local Runtime
+if exist "%PYTHON_EXE%" goto RUNTIME_READY
 
-:ACTIVATE
-:: Force the script to use the local venv's python and pip
-set "PYTHON_EXE=%~dp0.venv\Scripts\python.exe"
-set "PIP_EXE=%~dp0.venv\Scripts\pip.exe"
+echo [INFO] No local runtime detected. Preparing Python 3.8.8...
+echo [INFO] This is a one-time setup (approx. 25MB for Python + dependencies).
 
-if not exist "%PYTHON_EXE%" (
-    echo [ERROR] Virtual environment seems corrupted. Deleting .venv...
-    rmdir /s /q .venv
-    goto :END
-)
+:: 2. Download Python 3.8.8 Embeddable Zip
+echo [1/4] Downloading Python 3.8.8 executable...
+powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $url='https://www.python.org/ftp/python/3.8.8/python-3.8.8-embed-amd64.zip'; $out='python_dist.zip'; Invoke-WebRequest -Uri $url -OutFile $out"
+if errorlevel 1 goto FAIL
 
-:: 3. Verification (How to test)
-echo [DEBUG] Using Python from: %PYTHON_EXE%
+:: 3. Extract and Configure
+echo [2/4] Extracting runtime...
+if not exist "%RUNTIME_DIR%" mkdir "%RUNTIME_DIR%"
+powershell -Command "Expand-Archive -Path 'python_dist.zip' -DestinationPath '%RUNTIME_DIR%' -Force"
+del python_dist.zip
 
-:: 4. Installation
-if exist .venv\lacogsea_installed goto LAUNCH
+:: Enable site-packages in embeddable python (Crucial step)
+echo [3/4] Tuning runtime configuration...
+pushd "%RUNTIME_DIR%"
+powershell -Command "(Get-Content python38._pth) -replace '#import site', 'import site' | Set-Content python38._pth"
+popd
 
-echo [INFO] Installing core components (One-time setup)...
+:: 4. Install Pip
+echo [4/4] Activating package manager (pip)...
+powershell -Command "Invoke-WebRequest -Uri 'https://bootstrap.pypa.io/pip/3.8/get-pip.py' -OutFile 'get-pip.py'"
+"%PYTHON_EXE%" get-pip.py --no-warn-script-location
+del get-pip.py
 
-:: Use python -m pip to be 100%% sure we are using the venv
+:RUNTIME_READY
+:: 5. Install/Verify Dependencies
+if exist "%RUNTIME_DIR%\.installed_mark" goto LAUNCH
+
+echo [INFO] Installing locked dependencies from requirements.txt...
 "%PYTHON_EXE%" -m pip install --upgrade pip
-echo [1/2] Installing PyTorch (CPU version 2.4.1)...
+echo [Installing] PyTorch (CPU 2.4.1)...
 "%PYTHON_EXE%" -m pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu --prefer-binary
-
-echo [2/2] Installing remaining dependencies...
+echo [Installing] Other core packages...
 "%PYTHON_EXE%" -m pip install -r requirements.txt --prefer-binary
+"%PYTHON_EXE%" -m pip install -e . --no-deps
 
-if errorlevel 1 goto INSTALL_FAIL
-echo. > .venv\lacogsea_installed
-echo [SUCCESS] Environment ready.
+if errorlevel 1 goto FAIL
+echo. > "%RUNTIME_DIR%\.installed_mark"
+echo [SUCCESS] Environment is fully synchronized and locked.
 
 :LAUNCH
-echo [INFO] Launching LaCoGSEA...
+echo [INFO] Launching LaCoGSEA on Internal Python 3.8.8...
 "%PYTHON_EXE%" -m lacogsea.gui
 if errorlevel 1 (
     echo [ERROR] Application crashed.
@@ -55,20 +64,11 @@ if errorlevel 1 (
 )
 goto END
 
-:NOPYTHON
-echo [ERROR] Python not found. Please install Python 3.8-3.12.
+:FAIL
+echo ==================================================
+echo [ERROR] Setup failed. Please check your internet.
+echo ==================================================
 pause
-exit /b
-
-:VENV_FAIL
-echo [ERROR] Failed to create environment.
-pause
-exit /b
-
-:INSTALL_FAIL
-echo [ERROR] Installation failed.
-pause
-exit /b
 
 :END
 endlocal
