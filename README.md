@@ -139,4 +139,3 @@ After running, the `result/` folder will contain:
 - **License**: LaCoGSEA is released under the MIT License.
 - **Third-party software**: This tool interfaces with the Broad Institute's **GSEA software**. User of GSEA is subject to GSEA's license (Academic use only).
 
-**Developed by Zheng Zhiwei**
