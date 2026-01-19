@@ -4,43 +4,31 @@ LaCoGSEA is a powerful tool designed to interpret the latent space of autoencode
 
 ---
 
-### 📋 Prerequisites
-- **Python**: 3.8 to 3.13
-  - **Recommended for GUI**: Python 3.8 to 3.11
-  - **⚠️ Python 3.12+ Users**: The GUI has known compatibility issues due to Gradio framework limitations. 
-    - **Recommended**: Use **CLI mode** (see below) or downgrade to **Python 3.11**
-- **Java**: JRE 11+ or 17+ (Will be installed automatically if missing)
+### 📋 Prerequisites (Windows)
+- **None!**: For Windows users, just download the code and run. The system will automatically set up a verified **Python 3.8.8** environment locally.
+- **Java**: JRE 11+ or 17+ (Will be installed automatically by the app if missing).
+
+### 📋 Prerequisites (Linux/macOS/Manual)
+- **Python**: 3.8 to 3.11 (Recommended)
+- **Java**: JRE 11+ or 17+
 
 ---
 
-## 🎨 User Interface (For Python 3.8-3.11)
+## 🎨 User Interface (One-Click)
 
-> **⚠️ Python 3.12+ Users**: GUI is **not compatible**. Please use [CLI mode](#️-cli-usage-recommended-for-python-312) instead.
+The easiest way to use LaCoGSEA is through its built-in Graphical User Interface, which now comes with a **self-contained environment manager**.
 
-The easiest way to use LaCoGSEA is through its built-in Graphical User Interface. 
-
-### 🚀 Quick Start
+### 🚀 Quick Start (Windows)
 1. **Double-click `LaCoGSEA_run.bat`**.
-2. If Python is missing, follow the download link provided in the console.
-3. Your browser will open the interface automatically.
+2. **Sit back**: The script will automatically download a verified Python 3.8.8 runtime and all necessary dependencies (PyTorch, Gradio, etc.) into a local folder.
+3. **Run**: Your browser will open the interface automatically once the environment is ready.
 
-### ❓ Troubleshooting Python
-LaCoGSEA requires Python 3.8-3.13. If you don't have it:
-- [Download Python from here](https://www.python.org/downloads/). **Crucial**: Tick "Add Python to PATH" during install.
+### ❓ Why a local runtime?
+To ensure 100% reproducibility and avoid the "it works on my machine" problem, LaCoGSEA now locks the entire environment (Python + all libraries) to a verified state. This bypasses any Python version conflicts you might have on your system.
 
-*Note: Environment checks (like Java) and data transformations are handled automatically upon clicking 'Run' in the GUI.*
-
-### Manual Launch (Already Installed)
-If you have already run the automatic script once, activate the environment based on your terminal:
-
-- **CMD**: `.venv\Scripts\activate`
-- **PowerShell**: `.\.venv\Scripts\Activate.ps1`
-- **Linux / macOS / Git Bash**: `source .venv/bin/activate`  (or `source .venv/Scripts/activate` on Windows Git Bash)
-
-Then run:
-```bash
-lacogsea-gui
-```
+### Manual Launch (Already Initialized)
+If the environment is already set up, the `.bat` script will launch instantly. If you need to run it from a terminal:
+- **Windows**: `.python_runtime\python.exe -m lacogsea.gui`
 
 ---
 
@@ -53,11 +41,11 @@ lacogsea-gui
 
 ---
 
-## 🛠️ CLI Usage (Recommended for Python 3.12+)
+## 🛠️ CLI Usage (Cross-Platform)
 
-**✅ Fully compatible with all Python versions (3.8-3.13)**
+**✅ Fully compatible with Python 3.8-3.11**
 
-For users who prefer the terminal, or for **Python 3.12+ users** where the GUI is not compatible.
+For users on Linux/macOS or those who prefer the terminal.
 
 ### 1. Initial Setup
 If you haven't run the `LaCoGSEA_run.bat` (Windows), you can initialize the environment manually:
