@@ -297,7 +297,20 @@ def main():
                     "[Learn more](https://www.gsea-msigdb.org/)"
                 )
 
-    demo.launch(share=False, inbrowser=True, server_name="127.0.0.1")
+    # demo.launch(share=False, inbrowser=True, server_name="127.0.0.1")
+
+    try:
+        demo.launch(
+            share=False,
+            inbrowser=True,
+            server_name="127.0.0.1"
+        )
+    except Exception:
+        demo.launch(
+            share=True,
+            inbrowser=True
+        )
+
 
 if __name__ == "__main__":
     main()
